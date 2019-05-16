@@ -33,6 +33,22 @@
                 android:layout_height="match_parent"
                 android:background="#f00000"
                 android:orientation="vertical">
+                <Spinner
+                    android:id="@+id/country1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="입력하시오"/>
+                <Spinner
+                    android:id="@+id/country2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="입력하시오"/>
             </LinearLayout>
 
             <LinearLayout

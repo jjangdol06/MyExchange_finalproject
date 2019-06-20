@@ -140,7 +140,7 @@
                 android:id="@+id/webcafe"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#e7d50e"
+                android:background="#4400ff00"
                 android:orientation="vertical">
                 <ListView
                     android:layout_width="match_parent"

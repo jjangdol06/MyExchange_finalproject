@@ -3,23 +3,26 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="10dp">
 
     <ImageView
+        android:layout_margin="5dp"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:id="@+id/imageView" />
     <LinearLayout
+        android:layout_margin="5dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#ddffaa">
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:id="@+id/textViewX"
             android:textSize="20dp"
             android:gravity="center_vertical" />
-
     </LinearLayout>
+
 </LinearLayout>

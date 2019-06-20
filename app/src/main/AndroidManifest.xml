@@ -28,7 +28,7 @@
             android:value="@string/kakao_app_key" />
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyAYtp0whon1xHejDaQCZ9rMkXG9GjbG5Kc"/>
+            android:value="구글 api키"/>
         <uses-library android:name="org.apache.http.legacy"
             android:required="false" />
         <activity android:name=".MainActivity">

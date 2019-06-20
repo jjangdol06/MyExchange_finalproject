@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/commu10"
+        android:title="고고아시아"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="25dp"
+        android:layout_margin="5dp"
+        android:singleLine="true"  />
+
+    <item
+        android:id="@+id/commu11"
+        android:title="네일동||일본여행"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="25dp"
+        android:layout_margin="5dp"
+        android:singleLine="true"/>
+
+    <item
+        android:id="@+id/commu12"
+        android:title="투차||투어차이나"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textSize="25dp"
+        android:layout_margin="5dp"
+        android:singleLine="true"/>
+</menu>

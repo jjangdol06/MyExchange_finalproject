@@ -3,17 +3,21 @@ package com.cookandroid.myexchange;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
@@ -66,6 +70,7 @@ public class SecondActivity extends TabActivity implements OnMapReadyCallback { 
 
     ListView listview;
     ListViewAdapter adapter;
+    String strText;
 
     Spinner countrylist1, countrylist2;
     TextView iso1, iso2;
@@ -107,7 +112,26 @@ public class SecondActivity extends TabActivity implements OnMapReadyCallback { 
         for(int i =0;i<4;i++){
             adapter.addItem(this.getResources().getDrawable(icons[i]),names[i]);
         }
+
+
         listview.setAdapter(adapter);
+        registerForContextMenu(listview);
+
+
+        listview.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+
+                CountryItem item=(CountryItem)parent.getItemAtPosition(position);
+                strText=item.getName();
+
+                final String countryName;
+
+                return false;
+
+            }
+        });
 
 
         TabHost.TabSpec tabSalert = tabHost.newTabSpec("여행 경보").setIndicator("여행 경보");
@@ -190,6 +214,96 @@ public class SecondActivity extends TabActivity implements OnMapReadyCallback { 
         });
 
     } //onCreate
+
+    //listview
+
+    //컨텍스트 메뉴 달기
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo){
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        MenuInflater mInflater = getMenuInflater();
+        if(strText.equals("미국||USA")) {
+            mInflater.inflate(R.menu.commu_list, menu);
+        }
+        else if(strText.equals("유럽||EUROP")){
+            mInflater.inflate(R.menu.commu_list_eu, menu);
+        }
+        else if(strText.equals("베트남||VIETNAM")){
+            mInflater.inflate(R.menu.commu_list_viet, menu);
+        }
+        else if(strText.equals("아시아||ASIA")){
+            mInflater.inflate(R.menu.commu_list_asia, menu);
+        }
+    }
+
+    //메뉴 선택시 상태변화
+    public boolean onContextItemSelected(MenuItem item){
+        Uri uri;
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.commu1: //미여디
+                uri= Uri.parse("https://cafe.naver.com/nyctourdesign");
+                intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                return true;
+            case R.id.commu2:
+                uri= Uri.parse("https://cafe.naver.com/drivetravel");
+                intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                return true;
+            case R.id.commu3:
+                uri= Uri.parse("https://cafe.naver.com/gototheusa");
+                intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                return true;
+            case R.id.commu4: //유랑
+                uri= Uri.parse("https://cafe.naver.com/firenze");
+                intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                return true;
+            case R.id.commu5:
+                uri= Uri.parse("https://cafe.naver.com/momsolleh");
+                intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                return true;
+            case R.id.commu6:
+                uri= Uri.parse("https://cafe.naver.com/moomge");
+                intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                return true;
+            case R.id.commu7: //베트남
+                uri= Uri.parse("https://cafe.naver.com/minecraftpe");
+                intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                return true;
+            case R.id.commu8:
+                uri= Uri.parse("https://cafe.naver.com/mindy7857");
+                intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                return true;
+            case R.id.commu9:
+                uri= Uri.parse("https://cafe.naver.com/xxdkdk");
+                intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                return true;
+            case R.id.commu10: //아시아
+                uri= Uri.parse("https://cafe.naver.com/yabamcafe2");
+                intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                return true;
+            case R.id.commu11:
+                uri= Uri.parse("https://cafe.naver.com/jpnstory");
+                intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                return true;
+            case R.id.commu12:
+                uri= Uri.parse("https://cafe.naver.com/chtour");
+                intent = new Intent(Intent.ACTION_VIEW,uri);
+                startActivity(intent);
+                return true;
+        }
+        return false;
+    }
 
     //db를 위한 dbheloer
     public class myDBHelper extends SQLiteOpenHelper {

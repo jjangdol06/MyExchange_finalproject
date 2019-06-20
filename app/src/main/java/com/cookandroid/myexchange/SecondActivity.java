@@ -1,7 +1,11 @@
 package com.cookandroid.myexchange;
 
 import android.app.TabActivity;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.os.AsyncTask;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -40,10 +44,15 @@ import org.xmlpull.v1.XmlPullParserFactory;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+
+import jxl.Sheet;
+import jxl.Workbook;
+import jxl.read.biff.BiffException;
 
 public class SecondActivity extends TabActivity implements OnMapReadyCallback { //TabActivity를 상속받는다.
 
@@ -59,6 +68,13 @@ public class SecondActivity extends TabActivity implements OnMapReadyCallback { 
     ListViewAdapter adapter;
 
     Spinner countrylist1, countrylist2;
+    TextView iso1, iso2;
+    EditText money1, money2;
+    Button cal;
+
+    myDBHelper myHelper;
+    SQLiteDatabase sqlDB;
+    String tag2="SQLite";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,20 +135,99 @@ public class SecondActivity extends TabActivity implements OnMapReadyCallback { 
         });
 
         //국가 선택에 대한 Spinner(드롭다운):자체 xml 파일 생성해줌(country_dropdown)
-        String[] CountryList = {
-                "대한민국", "남아프리카 공화국", "네팔", "노르웨이", "뉴질랜드", "대만", "덴마크", "러시아", "마카오",
-                "말레이시아", "멕시코", "몽골", "미국", "바레인", "방글라데시", "베트남", "브라질", "브루나이", "사우디아라비아",
-                "스웨덴", "스위스", "싱가포르", "아랍에미리트", "영국", "오만", "요르단", "유럽연합", "이스라엘","이집트", "인도",
-                "인도네시아", "일본", "중국", "체코", "칠레", "카자흐스탄", "카타르", "캐나다", "쿠웨이트", "태국", "터키", "파키스탄",
-                "폴란드", "필리핀", "헝가리", "호주", "홍콩"};
+        String[] CountryList = {"아랍에미리트", "호주", "바레인","캐나다","스위스","중국"," 덴마크","유럽연합","영국","홍콩",
+                "인도네시아","일본","한국","쿠웨이트","말레이시아","노르웨이","뉴질랜드","사우디아라비아","스웨덴","싱가포르","태국","미국"};
         countrylist1 = (Spinner)findViewById(R.id.country1);
         countrylist2 = (Spinner)findViewById(R.id.country2);
         ArrayAdapter<String> cadapter = new ArrayAdapter<String>(this, R.layout.country_dropdown, CountryList);
         countrylist1.setAdapter(cadapter);
-        countrylist1.setSelection(0);
+        countrylist1.setSelection(12);
         countrylist2.setAdapter(cadapter);
+        iso1=(TextView)findViewById(R.id.isocode1);
+        iso2=(TextView)findViewById(R.id.isocode2);
+        money1=(EditText)findViewById(R.id.money1);
+        money2=(EditText)findViewById(R.id.money2);
+        myHelper=new myDBHelper(this);
+        cal=(Button)findViewById(R.id.calculatecurrency);
+        cal.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //sql db 입력
+                sqlDB=myHelper.getWritableDatabase();
+                myHelper.onUpgrade(sqlDB, 1,2);
+                sqlDB.close();
+
+                Cursor cursor;
+                String[] strC;
+                Integer[] intR;
+                String temp;
+                int c=0;
+                int num1, num2;
+                sqlDB=myHelper.getReadableDatabase();
+                cursor = sqlDB.rawQuery("SELECT currency, rate FROM exchangeTBL WHERE country='"+countrylist1.getSelectedItem().toString()+"' OR country='"
+                        +countrylist2.getSelectedItem().toString()+"';", null);
+                strC=new String[cursor.getCount()];
+                intR=new Integer[cursor.getCount()];
+                while (cursor.moveToNext()){
+                    strC[c]=cursor.getString(0);
+                    intR[c]=cursor.getInt(1);
+                    c++;
+                }
+                if(!countrylist1.getSelectedItem().toString().equals(strC[0])){
+                    iso1.setText(strC[1]);
+                    iso2.setText(strC[0]);
+                }else {
+                    iso1.setText(strC[0]);
+                    iso2.setText(strC[1]);
+                }
+                num1 = Integer.parseInt(money1.getText().toString());
+                num2 = ((int) (num1 / intR[1] * intR[0]));
+                money2.setText(Integer.toString(num2));
+
+                cursor.close();
+                sqlDB.close();
+            }
+        });
 
     } //onCreate
+
+    //db를 위한 dbheloer
+    public class myDBHelper extends SQLiteOpenHelper {
+        public myDBHelper(Context context) {
+            super(context, "exchangeDB", null, 1);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL("CREATE TABLE exchangeTBL (currency CHAR(4) PRIMARY KEY, country CHAR(10), rate INTEGER);"); //SQL 명령어, gName이 기본키이므로 동일한 속성이 있으면 안된다. MySQL오류가 난다면 예외처리를 해주어야한다.
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('AED','아랍에미리트',322);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('AUD','호주',814);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('BHD','바레인','3,143');");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('CAD','캐나다',885);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('CHF','스위스','1,184');");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('CNH','중국',170);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('DKK','덴마크',177);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('EUR','유럽연합','1,326');");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('GBP','영국','1,488');");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('HKD','홍콩',151);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('JPY','일본','1,092');");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('KRW','한국',1);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('KWD','쿠웨이트','3,899');");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('MYR','말레이시아',283);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('NOK','노르웨이',135);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('NZD','뉴질랜드',774);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('SAR','사우디아라비아',315);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('SGD','싱가포르',866);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('THB','태국',37);");
+            db.execSQL("INSERT INTO exchangeTBL VALUES ('USD','미국',1185);");
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            db.execSQL("DROP TABLE IF EXISTS exchangeTBL"); //기존에 있다면 지운다.
+            onCreate(db); //지우고 생성한다.
+        }
+    }
 
     //118~238 tabSalert에 관련된 api 호출
     private class DownloadWebpageTask extends AsyncTask<String, Void, String> {
